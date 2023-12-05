@@ -13,8 +13,6 @@ from nltk.tokenize import word_tokenize
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from ._base import BaseEmbedder
-
 
 nltk.download('stopwords')
 nltk.download('punkt')
