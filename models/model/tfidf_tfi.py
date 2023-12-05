@@ -23,7 +23,7 @@ class TFIDF_TFi(TfidfTransformer):
         global_df['Topic'] = self.all_documents.Topic
         
         avg_global_df = global_df.groupby(['Topic'], as_index=False).mean()
-        avg_global_df = avg_global_df.drop('Topic', 1)
+        avg_global_df = avg_global_df.drop('Topic', axis=1)
         self._avg_global_tfidf = avg_global_df.values
         
         # k * vocab

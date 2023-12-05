@@ -22,6 +22,12 @@ from .tfidf_idfi import TFIDF_IDFi
 from .tfidf_tfi import TFIDF_TFi
 from .backend._utils import select_backend
 
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import string
+from nltk.tokenize import word_tokenize
+
 
 class SMTopic:
 
@@ -107,6 +113,7 @@ class SMTopic:
     def _extract_topics(self, documents):
         
         documents_per_topic = documents.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
+
         self.scores, words = self._weighting_words(documents_per_topic, documents)
         self.topics = self._extract_words_per_topic(words)
 
@@ -166,6 +173,7 @@ class SMTopic:
 
 
     def _preprocess_text(self, documents):
+
         """ Basic preprocessing of text
 
         Steps:
@@ -173,10 +181,21 @@ class SMTopic:
             * Replace \n and \t with whitespace
             * Only keep alpha-numerical characters
         """
+        lemmatizer = WordNetLemmatizer()
+        stop_words = set(stopwords.words('english'))
         cleaned_documents = [doc.lower() for doc in documents]
         cleaned_documents = [doc.replace("\n", " ") for doc in cleaned_documents]
         cleaned_documents = [doc.replace("\t", " ") for doc in cleaned_documents]
+        # Remove punctuation
+        cleaned_documents = [''.join(char for char in doc if char not in string.punctuation) for doc in cleaned_documents]
 
+        # Remove stop words
+        cleaned_documents = [' '.join(word for word in doc.split() if word not in stop_words) for doc in cleaned_documents]
+
+        #Lemmatize words
+#         print("Lemmamamam")
+        cleaned_documents = [' '.join([lemmatizer.lemmatize(word) for word in word_tokenize(doc) if word.isalnum()]) for doc in cleaned_documents]
+        
         return cleaned_documents
     
 

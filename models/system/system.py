@@ -6,6 +6,33 @@ import gensim.corpora as corpora
 # from flair.embeddings import TransformerDocumentEmbeddings
 from gensim.models.coherencemodel import CoherenceModel
 
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+from ._base import BaseEmbedder
+
+
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+STOPWORDS = set(stopwords.words('english'))
+
+MIN_WORDS = 4
+MAX_WORDS = 200
+
+def tokenizer(self, tokens_sen, min_words=MIN_WORDS, max_words=MAX_WORDS, stopwords=STOPWORDS, lemmatize=True):
+    if lemmatize:
+        stemmer = WordNetLemmatizer()
+        tokens = [stemmer.lemmatize(w) for w in tokens_sen]
+    else:
+        tokens = [w for w in tokens_sen]
+    token = [w for w in tokens if (len(w) > min_words and len(w) < max_words
+                                                        and w not in stopwords)]
+    return tokens
 
 class SMTopicTM(BaseTopicSystem):
     def __init__(self, dataset, topic_model, num_topics, dim_size, word_select_method, embedding, seed):
@@ -18,7 +45,9 @@ class SMTopicTM(BaseTopicSystem):
         
         # make sentences and token_lists
         token_lists = self.dataset.get_corpus()
+        # token_list = tokenizer(token_list)
         self.sentences = [' '.join(text_list) for text_list in token_lists]
+        self.sentences = self.sentences[:50000]
         
         # embedding_model = TransformerDocumentEmbeddings(embedding)
         self.model = SMTopic(embedding_model=self.embedding,
