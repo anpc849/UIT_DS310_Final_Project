@@ -70,7 +70,13 @@ class BaseEmbedder:
         return self.embed(document, verbose)
     
 
+    def save_embeddings_matrix(self, path):
+        with open(path, 'wb') as f:
+            pickle.dump(self.embed_matrix, f)
+
     def load_embeddings_matrix(self, path):
         with open(path, 'rb') as f:
             embed_matrix = pickle.load(f)
             self.embed_matrix = torch.tensor(embed_matrix, dtype=float)
+
+    
