@@ -1,7 +1,7 @@
 from .base import BaseTopicSystem
-from model.smtopic import SMTopic
+from models.model.smtopic import SMTopic
 import pandas as pd
-from simcse import SimCSE
+# from simcse import SimCSE
 import gensim.corpora as corpora
 from sklearn.cluster import KMeans
 import numpy as np
@@ -22,7 +22,8 @@ class SMTopicTM(BaseTopicSystem):
         self.word_select_method = word_select_method
         self.embedding = embedding
         self.seed = seed
-        self.test_data = pd.read_csv(test_path)
+        if test_path is not None:
+            self.test_data = pd.read_csv(test_path)
         # make sentences and token_lists
         token_lists = self.dataset.get_corpus()
         self.sentences = [' '.join(text_list) for text_list in token_lists]
@@ -38,10 +39,10 @@ class SMTopicTM(BaseTopicSystem):
     
     
     def train_cluster(self):
-        self.topics = self.model_topic.fit_transform(documents=self.sentences, embedings=None, cluster=True)
+        self.topics = self.model_topic.fit_transform(documents=self.sentences, embeddings=None, cluster=True)
     
     def train_embeddings(self):
-        self.model_topic.fit_transform(documents=self.sentences, embedings=None, cluster=False)
+        self.model_topic.fit_transform(documents=self.sentences, embeddings=None, cluster=False)
     
     def get_embed_matrix(self):
         return self.model_topic._get_embeddings()
