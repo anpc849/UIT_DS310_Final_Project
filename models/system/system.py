@@ -47,10 +47,10 @@ class SMTopicTM(BaseTopicSystem):
     def get_embed_matrix(self):
         return self.model_topic._get_embeddings()
     
-    def evalute_embedding_model(self, cluster='kmeans'):
+    def evaluate_embedding_model(self, cluster='kmeans'):
         embed_matrix = self.get_embed_matrix()
-        umap = umap.UMAP(n_neighbors=15, n_components=5, metric='cosine', n_jobs=-1).fit(embed_matrix)
-        umap_embeddings = umap.transform(embed_matrix)
+        up = umap.UMAP(n_neighbors=15, n_components=5, metric='cosine', n_jobs=-1).fit(embed_matrix)
+        umap_embeddings = up.transform(embed_matrix)
 
         if cluster =='kmeans':
             cluster_model = KMeans(n_clusters=10, random_state=42)  # You can set the number of clusters as per your requirement
