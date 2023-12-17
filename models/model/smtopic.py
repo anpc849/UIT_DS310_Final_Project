@@ -50,7 +50,7 @@ class SMTopic:
         self.kmeans = KMeans(self.nr_topics, random_state=seed)
 
         
-    def fit_transform(self, documents, embeddings=None):
+    def fit_transform(self, documents, embeddings=None, cluster=False):
         
         documents = pd.DataFrame({"Document": documents,
                                   "ID": range(len(documents)),
@@ -62,16 +62,15 @@ class SMTopic:
         else:
             if self.embedding_model is not None:
                 self.embedding_model = select_backend(self.embedding_model)
+        if cluster:
+            if self.umap is not None:
+                embeddings = self._reduce_dimensionality(embeddings)
 
-        if self.umap is not None:
-            embeddings = self._reduce_dimensionality(embeddings)
-        
-        documents = self._cluster_embeddings(embeddings, documents)
+            documents = self._cluster_embeddings(embeddings, documents)
 
-        self._extract_topics(documents)
-        predictions = documents.Topic.to_list()
-
-        return predictions
+            self._extract_topics(documents)
+            predictions = documents.Topic.to_list()
+            return predictions
 
 
     def get_topics(self):
@@ -92,6 +91,8 @@ class SMTopic:
             embeddings = self.embedding_model.load_embeddings_matrix(path)
         return embeddings
     
+    def _get_embeddings(self):
+        return self.embedding_model.embed_matrix
 
     def _reduce_dimensionality(self, embeddings):
 
@@ -238,4 +239,3 @@ class SMTopic:
             scores = np.array([matrix[row, value] if value is not None else 0 for value in values])
             top_values.append(scores)
         return np.array(top_values)
-

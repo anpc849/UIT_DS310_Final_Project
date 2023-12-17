@@ -78,5 +78,3 @@ class BaseEmbedder:
         with open(path, 'rb') as f:
             embed_matrix = pickle.load(f)
             self.embed_matrix = torch.tensor(embed_matrix, dtype=float)
-
-    

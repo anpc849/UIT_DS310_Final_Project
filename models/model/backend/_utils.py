@@ -8,9 +8,10 @@ def select_backend(embedding_model):
   
     if isinstance(embedding_model, str):
         if "tfidf" in embedding_model:
-            return TFIDF_SenEmbed
+            return TFIDF_SenEmbed()
         elif "use" in embedding_model:
-            return USE_SenEmbed
+            return USE_SenEmbed()
+        
         else:
             return SentenceTransformerBackend(embedding_model)
     else:

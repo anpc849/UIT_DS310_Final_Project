@@ -28,7 +28,7 @@ class TFIDF_SenEmbed(BaseEmbedder):
         self.max_features = max_features
         self.stopwords = stopwords
 
-    def embed(self, corpus):
+    def embed(self, corpus, verbose=False):
         token_stop = self.tokenizer(' '.join(STOPWORDS), lemmatize=False)
         vectorizer = TfidfVectorizer(stop_words=token_stop,
                                      tokenizer=self.tokenizer,
@@ -38,7 +38,9 @@ class TFIDF_SenEmbed(BaseEmbedder):
         
         embed_matrix = vectorizer.fit_transform(corpus)
         embed_matrix_dense = embed_matrix.toarray()
-        self.embed_matrix = torch.from_numpy(embed_matrix_dense)
+        embed_matrix_tensor = torch.from_numpy(embed_matrix_dense)
+        self.embed_matrix = embed_matrix_tensor
+        return embed_matrix_tensor
     
     # def load_embeddings_matrix(self, path):
     #     with open(path, 'rb') as f:

@@ -1,65 +1,68 @@
 from .base import BaseTopicSystem
-from models.model.smtopic import SMTopic
+from model.smtopic import SMTopic
 import pandas as pd
-# from simcse import SimCSE
+from simcse import SimCSE
 import gensim.corpora as corpora
+from sklearn.cluster import KMeans
+import numpy as np
+from evaluation.recall_at_k import *
+
+import umap
+import hdbscan
+
 # from flair.embeddings import TransformerDocumentEmbeddings
 from gensim.models.coherencemodel import CoherenceModel
 
-import nltk
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('wordnet')
-STOPWORDS = set(stopwords.words('english'))
-
-MIN_WORDS = 4
-MAX_WORDS = 200
-
-def tokenizer(self, tokens_sen, min_words=MIN_WORDS, max_words=MAX_WORDS, stopwords=STOPWORDS, lemmatize=True):
-    if lemmatize:
-        stemmer = WordNetLemmatizer()
-        tokens = [stemmer.lemmatize(w) for w in tokens_sen]
-    else:
-        tokens = [w for w in tokens_sen]
-    token = [w for w in tokens if (len(w) > min_words and len(w) < max_words
-                                                        and w not in stopwords)]
-    return tokens
 
 class SMTopicTM(BaseTopicSystem):
-    def __init__(self, dataset, topic_model, num_topics, dim_size, word_select_method, embedding, seed):
+    def __init__(self, dataset, topic_model, num_topics, dim_size, word_select_method, embedding, seed, test_path):
         super().__init__(dataset, topic_model, num_topics)
         print(f'Initialize SMTopicTM with num_topics={num_topics}, embedding={embedding}')
         self.dim_size = dim_size
         self.word_select_method = word_select_method
         self.embedding = embedding
         self.seed = seed
-        
+        self.test_data = pd.read_csv(test_path)
         # make sentences and token_lists
         token_lists = self.dataset.get_corpus()
-        # token_list = tokenizer(token_list)
         self.sentences = [' '.join(text_list) for text_list in token_lists]
-        self.sentences = self.sentences[:50000]
         
         # embedding_model = TransformerDocumentEmbeddings(embedding)
-        self.model = SMTopic(embedding_model=self.embedding,
+        self.model_topic = SMTopic(embedding_model=self.embedding,
                              nr_topics=num_topics, 
                              dim_size=self.dim_size, 
                              word_select_method=self.word_select_method, 
                              seed=self.seed)
+        
     
     
-    def train(self):
-        self.topics = self.model.fit_transform(self.sentences)
     
+    def train_cluster(self):
+        self.topics = self.model_topic.fit_transform(documents=self.sentences, embedings=None, cluster=True)
     
-    def evaluate(self):
+    def train_embeddings(self):
+        self.model_topic.fit_transform(documents=self.sentences, embedings=None, cluster=False)
+    
+    def get_embed_matrix(self):
+        return self.model_topic._get_embeddings()
+    
+    def evalute_embedding_model(self, cluster='kmeans'):
+        embed_matrix = self.get_embed_matrix()
+        umap = umap.UMAP(n_neighbors=15, n_components=5, metric='cosine', n_jobs=-1).fit(embed_matrix)
+        umap_embeddings = umap.transform(embed_matrix)
+
+        if cluster =='kmeans':
+            cluster_model = KMeans(n_clusters=10, random_state=42)  # You can set the number of clusters as per your requirement
+            cluster_model.fit(umap_embeddings)
+        elif cluster =='hdbscan':
+            cluster_model = hdbscan.HDBSCAN(min_cluster_size=10, metric='euclidean', cluster_selection_method='eom').fit(umap_embeddings)
+        
+        results = get_recall_at_k_parallel(self.test_data, cluster_model.labels_, embed_matrix, size=2000, k_list=[5,10,50])
+        
+        return results
+
+
+    def evaluate_topic_model(self):
         td_score = self._calculate_topic_diversity()
         cv_score, npmi_score = self._calculate_cv_npmi(self.sentences, self.topics)
         
@@ -67,11 +70,11 @@ class SMTopicTM(BaseTopicSystem):
     
     
     def get_topics(self):
-        return self.model.get_topics()
+        return self.model_topic.get_topics()
     
     
     def _calculate_topic_diversity(self):
-        topic_keywords = self.model.get_topics()
+        topic_keywords = self.model_topic.get_topics()
 
         bertopic_topics = []
         for k,v in topic_keywords.items():
@@ -94,15 +97,15 @@ class SMTopicTM(BaseTopicSystem):
                         "ID": range(len(docs)),
                         "Topic": topics})
         documents_per_topic = doc.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
-        cleaned_docs = self.model._preprocess_text(documents_per_topic.Document.values)
+        cleaned_docs = self.model_topic._preprocess_text(documents_per_topic.Document.values)
 
-        vectorizer = self.model.vectorizer_model
+        vectorizer = self.model_topic.vectorizer_model
         analyzer = vectorizer.build_analyzer()
 
         tokens = [analyzer(doc) for doc in cleaned_docs]
         dictionary = corpora.Dictionary(tokens)
         corpus = [dictionary.doc2bow(token) for token in tokens]
-        topic_words = [[words for words, _ in self.model.get_topic(topic)] 
+        topic_words = [[words for words, _ in self.model_topic.get_topic(topic)] 
                     for topic in range(len(set(topics))-1)]
 
         coherence_model = CoherenceModel(topics=topic_words, 
@@ -120,4 +123,3 @@ class SMTopicTM(BaseTopicSystem):
         npmi_coherence = coherence_model_npmi.get_coherence()
 
         return cv_coherence, npmi_coherence 
-    
