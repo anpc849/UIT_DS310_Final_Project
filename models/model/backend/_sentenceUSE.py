@@ -9,11 +9,12 @@ from tqdm import tqdm
 from ._base import BaseEmbedder
 
 class USE_SenEmbed(BaseEmbedder):
-    def __init__(self, module_url, batch_size=8):
+    def __init__(self, batch_size=8):
+        module_url = "https://tfhub.dev/google/universal-sentence-encoder/4"
         self.model = hub.load(module_url)
         self.batch_size = batch_size
 
-    def embed(self, corpus):
+    def embed(self, corpus, verbose=False):
         input_generator = self.text_generator(corpus, self.batch_size)
         embeddings = []
         for text_batch in tqdm(input_generator, total=len(corpus)//self.batch_size):
