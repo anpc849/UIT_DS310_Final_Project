@@ -47,7 +47,7 @@ class SMTopicTM(BaseTopicSystem):
     def get_embed_matrix(self):
         return self.model_topic._get_embeddings()
     
-    def evaluate_embedding_model(self, cluster='kmeans'):
+    def evaluate_embedding_model(self, cluster='kmeans', size_test=2000):
         embed_matrix = self.get_embed_matrix()
         up = umap.UMAP(n_neighbors=15, n_components=5, metric='cosine', n_jobs=-1).fit(embed_matrix)
         umap_embeddings = up.transform(embed_matrix)
@@ -58,7 +58,7 @@ class SMTopicTM(BaseTopicSystem):
         elif cluster =='hdbscan':
             cluster_model = hdbscan.HDBSCAN(min_cluster_size=10, metric='euclidean', cluster_selection_method='eom').fit(umap_embeddings)
         
-        results = get_recall_at_k_parallel(self.test_data, cluster_model.labels_, embed_matrix, size=2000, k_list=[5,10,50])
+        results = get_recall_at_k_parallel(self.test_data, cluster_model.labels_, embed_matrix, size=size_test, k_list=[5,10,50])
         
         return results
 
