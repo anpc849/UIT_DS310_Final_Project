@@ -37,10 +37,15 @@ class Word2Vec_SenEmbed(BaseEmbedder):
         #     self.load_embeddings_matrix(path)
         EMBEDDING_FILE = '/content/drive/MyDrive/DS310_Final/GoogleNews-vectors-negative300.bin.gz'
         self.google_word2vec = KeyedVectors.load_word2vec_format(EMBEDDING_FILE, binary=True)
+    
     def embed(self, corpus, verbose=False):
         token_stop = self.tokenizer(' '.join(STOPWORDS), lemmatize=False)
         corpus = [self.tokenizer(sentence) for sentence in corpus]
         embedding_matrices = []
+
+        if verbose:
+            corpus = tqdm(corpus, desc="Embedding Progress")
+
         for sentence in corpus:
             embedding_matrix = self.sentence_embedding(sentence, self.google_word2vec)
             embedding_matrices.append(embedding_matrix)
