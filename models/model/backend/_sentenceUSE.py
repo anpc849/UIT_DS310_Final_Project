@@ -21,8 +21,9 @@ class USE_SenEmbed(BaseEmbedder):
             embeddings.append(self.model(text_batch))
         embed_matrix_tf = tf.concat(embeddings, axis=0)
         embed_matrix_np = embed_matrix_tf.numpy()
-        self.embed_matrix = torch.from_numpy(embed_matrix_np)
-
+        embed_matrix = torch.from_numpy(embed_matrix_np)
+        self.embed_matrix = embed_matrix
+        return embed_matrix
     # def load_embeddings_matrix(self, path):
     #     with open(path, 'rb') as f:
     #         embed_matrix = pickle.load(f)
