@@ -58,13 +58,13 @@ class SMTopic:
 
         if embeddings is None:
             self.embedding_model = select_backend(self.embedding_model)
-            embeddings = self._extract_embeddings(documents.Document)
+            embeddings_matrix = self._extract_embeddings(documents.Document)
         else:
             if self.embedding_model is not None:
                 self.embedding_model = select_backend(self.embedding_model)
         if cluster:
             if self.umap is not None:
-                embeddings = self._reduce_dimensionality(embeddings)
+                embeddings = self._reduce_dimensionality(embeddings_matrix)
 
             documents = self._cluster_embeddings(embeddings, documents)
 
