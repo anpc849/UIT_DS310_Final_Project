@@ -13,13 +13,13 @@ pip install -r requirements.txt
 ## Clone the Repository
 To get started, clone this repository to your local machine using the following command:
 
-``` bash
+```bash
 git clone https://github.com/anpro948/DS310_RS.git
 ```
 
 ## Set up virtual environment
 It's recommended to create a virtual environment to manage project dependencies. Navigate to the project directory and run the following commands:
-``` bash
+```bash
 cd DS310_RS
 python -m venv venv
 venv\Scripts\activate ### on windows
@@ -56,6 +56,8 @@ system.evalute_embedding_model()
 system.train_cluster()
 td_score, cv_score, npmi_score = system.evaluate_topic_model()
 ```
+## Run gradio app
+See `/webapp/gradio.py` file for more detail.
 
 ## References
 My source code is based on the code from the paper: [Is Neural Topic Modelling Better than Clustering? An Empirical Study on Clustering with Contextual Embeddings for Topics](https://aclanthology.org/2022.naacl-main.285.pdf)
