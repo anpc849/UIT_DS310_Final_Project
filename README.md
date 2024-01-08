@@ -57,7 +57,7 @@ system.train_cluster()
 td_score, cv_score, npmi_score = system.evaluate_topic_model()
 ```
 ## Run gradio app
-See `/webapp/gradio.py` file for more detail.
+See `/webapp/gradio.ipynb` file for more detail.
 
 ## References
 My source code is based on the code from the paper: [Is Neural Topic Modelling Better than Clustering? An Empirical Study on Clustering with Contextual Embeddings for Topics](https://aclanthology.org/2022.naacl-main.285.pdf)
