@@ -59,6 +59,7 @@ td_score, cv_score, npmi_score = system.evaluate_topic_model()
 
 ## References
 My source code is based on the code from the paper: [Is Neural Topic Modelling Better than Clustering? An Empirical Study on Clustering with Contextual Embeddings for Topics](https://aclanthology.org/2022.naacl-main.285.pdf)
+
 If you use or refer to this code, please cite the following paper:
 ```bibtex
 @inproceedings{zhang-etal-2022-neural,
