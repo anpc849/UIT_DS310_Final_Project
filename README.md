@@ -1,7 +1,9 @@
 
-# DS310_RS Code Repository
+# DS310 Final Project: Enhancing Content-Based Recommender System with Modern Sentence Embedding Methods
 
-Welcome to the DS310_RS repository! This repository contains the source code for DS310. You can use the following instructions to clone the repository and get started with the code.
+Check out my report on Overleaf: [pdf_report](https://www.overleaf.com/project/65892fa9d81881052dbacb3e).
+<br>
+This repository contains the source code for DS310. You can use the following instructions to clone the repository and get started with the code.
 
 ## Prerequisites
 Before you begin, make sure you have the following installed on your system. You can check the packages in the `requirements.txt` file:
@@ -14,13 +16,13 @@ pip install -r requirements.txt
 To get started, clone this repository to your local machine using the following command:
 
 ```bash
-git clone https://github.com/anpro948/DS310_RS.git
+git clone https://github.com/anpc849/UIT_DS310_Final_Project.git
 ```
 
 ## Set up virtual environment
 It's recommended to create a virtual environment to manage project dependencies. Navigate to the project directory and run the following commands:
 ```bash
-cd DS310_RS
+cd UIT_DS310_Final_Project
 python -m venv venv
 venv\Scripts\activate ### on windows
 source venv/bin/activate ### on macOS and Linux
@@ -58,6 +60,8 @@ td_score, cv_score, npmi_score = system.evaluate_topic_model()
 ```
 ## Run gradio app
 See `/webapp/gradio.ipynb` file for more detail.
+<br>
+See `snapshots` for  for visual demos showcasing the capabilities of my system.
 
 ## References
 My source code is based on the code from the paper: [Is Neural Topic Modelling Better than Clustering? An Empirical Study on Clustering with Contextual Embeddings for Topics](https://aclanthology.org/2022.naacl-main.285.pdf)
