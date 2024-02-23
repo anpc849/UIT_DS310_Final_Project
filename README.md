@@ -1,6 +1,13 @@
 
 # DS310 Final Project: Enhancing Content-Based Recommender System with Modern Sentence Embedding Methods
 
+![image](https://github.com/anpc849/UIT_DS310_Final_Project/assets/160831531/89ed4ba4-e8f3-44af-b63d-c82c81d24a36)
+
+
+
+
+
+
 Check out my report on Overleaf: [pdf_report](https://www.overleaf.com/project/65892fa9d81881052dbacb3e).
 <br>
 This repository contains the source code for DS310. You can use the following instructions to clone the repository and get started with the code.
