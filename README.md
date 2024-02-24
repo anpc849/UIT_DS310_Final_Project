@@ -8,7 +8,7 @@
 
 
 
-Check out my report on Overleaf: [pdf_report](https://www.overleaf.com/project/65892fa9d81881052dbacb3e).
+Check out `DS310_report.pdf` for detailed insights.
 <br>
 This repository contains the source code for DS310. You can use the following instructions to clone the repository and get started with the code.
 
